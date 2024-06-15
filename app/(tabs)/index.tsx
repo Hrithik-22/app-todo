@@ -1,70 +1,80 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useTodoStore } from "../../store/todoStore";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import TodoItem from '@/components/TodoItem';
 
 export default function HomeScreen() {
+  const { todos, fetchTodos, toggleTodo, deleteTodo } = useTodoStore();
+  const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
+  const [sort, setSort] = useState<'title' | 'status' | 'recent' | 'id'>('title');
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'done') return todo.completed;
+    return true;
+  });
+
+  const sortedTodos = filteredTodos.sort((a, b) => {
+    if (sort === 'title') return a.title.localeCompare(b.title);
+    if (sort === 'status') return Number(a.completed) - Number(b.completed);
+    if (sort === 'id') return a.id - b.id;
+    return 0;
+  });
+
+  const totalTasks = todos.length;
+  const remainingTasks = todos.filter(todo => !todo.completed).length;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView>
+      <View className='bg-black p-2 h-full'>
+        <View className='flex-row justify-between p-2'>
+          <Text className='text-white'>{remainingTasks} of {totalTasks} tasks remaining</Text>
+        </View>
+        <View className='flex-row justify-between p-2'>
+          <TouchableOpacity onPress={() => setSort('title')}>
+            <Text className='text-white'>Sort by Title</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSort('status')}>
+            <Text className='text-white'>Sort by Status</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSort('recent')}>
+            <Text className='text-white'>Sort by Most Recent</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setSort('id')}>
+            <Text className='text-white'>Sort by ID</Text>
+          </TouchableOpacity>
+        </View>
+        <View className='flex-row justify-between p-2'>
+          <TouchableOpacity onPress={() => setFilter('all')}>
+            <Text className='text-white'>All</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setFilter('active')}>
+            <Text className='text-white'>Active</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setFilter('done')}>
+            <Text className='text-white'>Done</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={sortedTodos}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TodoItem
+              title={item.title}
+              completed={item.completed}
+              onToggle={() => toggleTodo(item.id)}
+              onDelete={() => deleteTodo(item.id)}
+            />
+          )}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
