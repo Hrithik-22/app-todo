@@ -24,6 +24,7 @@ export default function HomeScreen() {
 
   const sortedTodos = filteredTodos.sort((a, b) => {
     if (sort === "id") return b.id - a.id;
+    if (sort === "title") return a.title.localeCompare(b.title);
     if (sort === "recent")
       return (
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
@@ -56,7 +57,7 @@ export default function HomeScreen() {
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ color: "white", marginRight: 8 }}>Sort by:</Text>
+          <Text style={{ color: "white", marginRight: 5 }}>Sort by:</Text>
           <Button
             mode={sort === "recent" ? "contained" : "outlined"}
             onPress={() => setSort("recent")}
@@ -70,6 +71,13 @@ export default function HomeScreen() {
             style={{ marginHorizontal: 4 }}
           >
             ID
+          </Button>
+          <Button
+            mode={sort === "title" ? "contained" : "outlined"}
+            onPress={() => setSort("title")}
+            style={{ marginHorizontal: 4 }}
+          >
+            Order
           </Button>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
