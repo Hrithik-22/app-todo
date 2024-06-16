@@ -79,13 +79,7 @@ export default function HomeScreen() {
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={{ color: "white", marginRight: 8 }}>Sort by:</Text>
-          <Button
-            mode={sort === "title" ? "contained" : "outlined"}
-            onPress={() => setSort("title")}
-            style={{ marginHorizontal: 4 }}
-          >
-            Alphabetic Order
-          </Button>
+
           <Button
             mode={sort === "recent" ? "contained" : "outlined"}
             onPress={() => setSort("recent")}
