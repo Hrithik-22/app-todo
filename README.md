@@ -1,20 +1,6 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Welcome to Todo app created by Hrithik Kedare for Assessment Test 👋
 
 ## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
 
 In the output, you'll find options to open the app in a
 
@@ -25,26 +11,20 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Features
 
-When you're ready, run:
+- **Fetch TODO items from API**:
+  Fetch a list of TODO items from `https://jsonplaceholder.typicode.com/todos` on app load.
+- **Display TODO items**: Display the fetched TODO items in a list format.
+- **Add new TODO items**: Allow users to add new TODO items.
+- **Mark TODO items as completed**: Allow users to mark TODO items as completed.
+- **Delete TODO items**: Allow users to delete TODO items.
+- **Count of TODO items**: Provide a count of total TODO items and completed TODO items.
+- **Timestamps**: Maintain `created_at` and `updated_at` timestamps for all TODO items.
+- **Sorting**: Allow users to sort the TODO list by Most Recent or by ID.
+- **Filtering**: Allow users to filter the TODO list by All, Active, or Done.
 
-```bash
-npm run reset-project
-```
+### Bonus Features Added (Optional)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+TypeScript: Refactor the project to use TypeScript for enhanced type safety and better code readability.
+Pagination/Infinite Scrolling: Implement pagination or infinite scrolling for better performance.
