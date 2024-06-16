@@ -20,7 +20,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
 }) => {
   return (
-    <View className="flex-row justify-center gap-3 items-center p-4 border-b border-gray-300">
+    <View
+      style={{ backgroundColor: "#1f1f1f" }}
+      className="flex-row justify-center gap-3 items-center p-4 border-b border-gray-300 "
+    >
       <Checkbox
         value={completed}
         onValueChange={onToggle}

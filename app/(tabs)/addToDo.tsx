@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Keyboard,
 } from "react-native";
-import { TextInput, Appbar } from "react-native-paper";
+import { TextInput, Appbar, Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTodoStore } from "@/store/todoStore";
 
@@ -53,8 +53,10 @@ const AddTodoScreen = () => {
             },
           }}
         />
-        <TouchableOpacity style={styles.button} onPress={handleAddTodo}>
-          <Text style={styles.buttonText}>Add</Text>
+        <TouchableOpacity onPress={handleAddTodo}>
+          <Button mode="contained" style={styles.button}>
+            Add
+          </Button>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -93,14 +95,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    backgroundColor: "#2a2a2a", // Changed to match HomeScreen
+    backgroundColor: "#2a2a2a",
     marginBottom: 16,
   },
   button: {
-    backgroundColor: "#3182ce",
     padding: 10,
     alignItems: "center",
-    borderRadius: 5,
   },
   buttonText: {
     color: "#fff",

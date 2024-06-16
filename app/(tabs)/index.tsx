@@ -57,7 +57,7 @@ export default function HomeScreen() {
       <View
         style={{
           padding: 16,
-          backgroundColor: "#1f1f1f",
+          backgroundColor: "#000",
           alignItems: "center",
         }}
       >
@@ -74,7 +74,7 @@ export default function HomeScreen() {
           gap: 10,
           justifyContent: "space-between",
           padding: 16,
-          backgroundColor: "#1f1f1f",
+          backgroundColor: "#000",
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
