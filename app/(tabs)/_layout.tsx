@@ -30,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="addToDo"
         options={{
-          title: "Add ToDO",
+          title: "Add ToDo",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "add-circle" : "add-circle-outline"}

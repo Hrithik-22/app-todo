@@ -5,6 +5,8 @@ interface Todo {
   id: number;
   title: string;
   completed: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 interface TodoState {
@@ -25,22 +27,35 @@ export const useTodoStore = create<TodoState>((set) => ({
       `https://jsonplaceholder.typicode.com/todos?_page=${page}&_limit=20`
     );
     const newTodos = await response.json();
+    const todosWithTimestamps = newTodos.map((todo: Todo) => ({
+      ...todo,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
     set((state) => ({
-      paginatedTodos: [...state.paginatedTodos, ...newTodos],
+      paginatedTodos: [...state.paginatedTodos, ...todosWithTimestamps],
     }));
   },
   fetchAllTodos: async () => {
     const response = await fetch(`https://jsonplaceholder.typicode.com/todos`);
     const allTodos = await response.json();
-    set({ todos: allTodos });
+    const todosWithTimestamps = allTodos.map((todo: Todo) => ({
+      ...todo,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+    set({ todos: todosWithTimestamps });
   },
   addTodo: (title: string) =>
     set((state) => {
-      const newTodo = {
+      const now = new Date().toISOString();
+      const newTodo: Todo = {
         userId: 1,
         id: state.todos.length + 1,
         title,
         completed: false,
+        created_at: now,
+        updated_at: now,
       };
       return {
         todos: [newTodo, ...state.todos],
@@ -48,14 +63,21 @@ export const useTodoStore = create<TodoState>((set) => ({
       };
     }),
   toggleTodo: (id: number) =>
-    set((state) => ({
-      todos: state.todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ),
-      paginatedTodos: state.paginatedTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ),
-    })),
+    set((state) => {
+      const now = new Date().toISOString();
+      return {
+        todos: state.todos.map((todo) =>
+          todo.id === id
+            ? { ...todo, completed: !todo.completed, updated_at: now }
+            : todo
+        ),
+        paginatedTodos: state.paginatedTodos.map((todo) =>
+          todo.id === id
+            ? { ...todo, completed: !todo.completed, updated_at: now }
+            : todo
+        ),
+      };
+    }),
   deleteTodo: (id: number) =>
     set((state) => ({
       todos: state.todos.filter((todo) => todo.id !== id),
