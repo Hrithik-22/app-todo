@@ -26,5 +26,5 @@ You can start developing by editing the files inside the **app** directory. This
 
 ### Bonus Features Added (Optional)
 
-TypeScript: Refactor the project to use TypeScript for enhanced type safety and better code readability.
-Pagination/Infinite Scrolling: Implement pagination or infinite scrolling for better performance.
+- **TypeScript**: Refactor the project to use TypeScript for enhanced type safety and better code readability.
+- **Pagination/Infinite Scrolling**: Implement pagination or infinite scrolling for better performance.
