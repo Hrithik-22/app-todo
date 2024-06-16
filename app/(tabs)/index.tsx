@@ -1,25 +1,45 @@
-// Home page for todo
-
-import { View, Text, Button, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useTodoStore } from "../../store/todoStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
 import TodoItem from "@/components/TodoItem";
 
 export default function HomeScreen() {
-  const { todos, fetchTodos, toggleTodo, deleteTodo } = useTodoStore();
-  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
+  const {
+    todos,
+    paginatedTodos,
+    fetchTodos,
+    fetchAllTodos,
+    toggleTodo,
+    deleteTodo,
+  } = useTodoStore();
+  const [filter, setFilter] = useState<"all" | "active" | "done">("active");
   const [sort, setSort] = useState<"title" | "status" | "recent" | "id">(
-    "title"
+    "recent"
   );
-  const navigation = useNavigation();
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchTodos();
+    fetchAllTodos();
+    fetchTodos(page);
   }, []);
 
-  const filteredTodos = todos.filter((todo) => {
+  const loadMoreTodos = () => {
+    if (!loading) {
+      setLoading(true);
+      setPage((prevPage) => prevPage + 1);
+      fetchTodos(page + 1).finally(() => setLoading(false));
+    }
+  };
+
+  const filteredTodos = paginatedTodos.filter((todo) => {
     if (filter === "active") return !todo.completed;
     if (filter === "done") return todo.completed;
     return true;
@@ -28,7 +48,7 @@ export default function HomeScreen() {
   const sortedTodos = filteredTodos.sort((a, b) => {
     if (sort === "title") return a.title.localeCompare(b.title);
     if (sort === "status") return Number(a.completed) - Number(b.completed);
-    if (sort === "id") return a.id - b.id;
+    if (sort === "recent") return a.id - b.id;
     return 0;
   });
 
@@ -70,7 +90,7 @@ export default function HomeScreen() {
         </View>
         <FlatList
           data={sortedTodos}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.title}
           renderItem={({ item }) => (
             <TodoItem
               title={item.title}
@@ -79,6 +99,11 @@ export default function HomeScreen() {
               onDelete={() => deleteTodo(item.id)}
             />
           )}
+          onEndReached={loadMoreTodos}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loading ? <ActivityIndicator size="large" color="#fff" /> : null
+          }
         />
       </View>
     </SafeAreaView>
