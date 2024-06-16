@@ -1,47 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
-import { useTodoStore } from "../../store/todoStore";
+import { useTodoStore } from "@/store/todoStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TodoItem from "@/components/TodoItem";
 import { Button, Text } from "react-native-paper";
 
 export default function HomeScreen() {
-  const {
-    todos,
-    paginatedTodos,
-    fetchTodos,
-    fetchAllTodos,
-    toggleTodo,
-    deleteTodo,
-  } = useTodoStore();
-  const [filter, setFilter] = useState<"all" | "active" | "done">("active");
+  const { todos, fetchTodos, addTodo, toggleTodo, deleteTodo } = useTodoStore();
+  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
   const [sort, setSort] = useState<"title" | "recent" | "id">("recent");
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetchAllTodos()
-      .then(() => fetchTodos(page, filter, sort))
-      .finally(() => setLoading(false));
-  }, [filter, sort, page]);
+    fetchTodos().finally(() => setLoading(false));
+  }, []);
 
-  const loadMoreTodos = () => {
-    if (!loading) {
-      setLoading(true);
-      setPage((prevPage) => prevPage + 1);
-      fetchTodos(page + 1, filter, sort).finally(() => setLoading(false));
-    }
-  };
-
-  const filteredTodos = paginatedTodos.filter((todo) => {
+  const filteredTodos = todos.filter((todo) => {
     if (filter === "active") return !todo.completed;
     if (filter === "done") return todo.completed;
     return true;
   });
 
   const sortedTodos = filteredTodos.sort((a, b) => {
-    if (sort === "title") return a.title.localeCompare(b.title);
+    if (sort === "id") return b.id - a.id;
     if (sort === "recent")
       return (
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
@@ -55,11 +37,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }}>
       <View
-        style={{
-          padding: 16,
-          backgroundColor: "#000",
-          alignItems: "center",
-        }}
+        style={{ padding: 16, backgroundColor: "#000", alignItems: "center" }}
       >
         <Text style={{ color: "white", fontSize: 18, marginBottom: 8 }}>
           Todo App - by Hrithik Kedare
@@ -79,7 +57,6 @@ export default function HomeScreen() {
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={{ color: "white", marginRight: 8 }}>Sort by:</Text>
-
           <Button
             mode={sort === "recent" ? "contained" : "outlined"}
             onPress={() => setSort("recent")}
@@ -122,7 +99,7 @@ export default function HomeScreen() {
       </View>
       <FlatList
         data={sortedTodos}
-        keyExtractor={(item) => item.title + item.created_at}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TodoItem
             title={item.title}
@@ -133,8 +110,6 @@ export default function HomeScreen() {
             onDelete={() => deleteTodo(item.id)}
           />
         )}
-        onEndReached={loadMoreTodos}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={
           loading ? <ActivityIndicator size="large" color="#fff" /> : null
         }
