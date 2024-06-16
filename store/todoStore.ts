@@ -12,7 +12,7 @@ interface Todo {
 interface TodoState {
   todos: Todo[];
   paginatedTodos: Todo[];
-  fetchTodos: (page: number) => Promise<void>;
+  fetchTodos: (page: number, filter: any, sort: any) => Promise<void>;
   fetchAllTodos: () => Promise<void>;
   addTodo: (title: string) => void;
   toggleTodo: (id: number) => void;
@@ -22,7 +22,7 @@ interface TodoState {
 export const useTodoStore = create<TodoState>((set) => ({
   todos: [],
   paginatedTodos: [],
-  fetchTodos: async (page: number) => {
+  fetchTodos: async (page: number, filter: any, sort: any) => {
     const response = await fetch(
       `https://jsonplaceholder.typicode.com/todos?_page=${page}&_limit=20`
     );
@@ -32,8 +32,35 @@ export const useTodoStore = create<TodoState>((set) => ({
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }));
+
+    let filteredTodos = todosWithTimestamps;
+    if (filter === "active") {
+      filteredTodos = filteredTodos.filter(
+        (todo: { completed: any }) => !todo.completed
+      );
+    } else if (filter === "done") {
+      filteredTodos = filteredTodos.filter(
+        (todo: { completed: any }) => todo.completed
+      );
+    }
+
+    let sortedTodos = filteredTodos;
+    if (sort === "title") {
+      sortedTodos = sortedTodos.sort(
+        (a: { title: string }, b: { title: any }) =>
+          a.title.localeCompare(b.title)
+      );
+    } else if (sort === "recent") {
+      sortedTodos = sortedTodos.sort(
+        (
+          a: { updated_at: string | number | Date },
+          b: { updated_at: string | number | Date }
+        ) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
+    }
+
     set((state) => ({
-      paginatedTodos: [...state.paginatedTodos, ...todosWithTimestamps],
+      paginatedTodos: [...state.paginatedTodos, ...sortedTodos],
     }));
   },
   fetchAllTodos: async () => {

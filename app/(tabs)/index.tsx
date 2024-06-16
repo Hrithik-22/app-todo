@@ -20,15 +20,17 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchAllTodos();
-    fetchTodos(page);
-  }, []);
+    setLoading(true);
+    fetchAllTodos()
+      .then(() => fetchTodos(page, filter, sort))
+      .finally(() => setLoading(false));
+  }, [filter, sort, page]);
 
   const loadMoreTodos = () => {
     if (!loading) {
       setLoading(true);
       setPage((prevPage) => prevPage + 1);
-      fetchTodos(page + 1).finally(() => setLoading(false));
+      fetchTodos(page + 1, filter, sort).finally(() => setLoading(false));
     }
   };
 
